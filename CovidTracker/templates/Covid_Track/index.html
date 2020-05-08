@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="{% static 'css/mystyle.css' %}">
+        <link rel="shortcut icon" href="{% static 'img/logo1.png' %}">
+        <title>Covid 19 Dashboard</title>
+    </head>
+    <body>
+        {% block body_block %}
+        <header class="jumbotron text-custom text-center"><img src="{% static 'img/logo2.png' %}" width="70px" height="70px"><br><h5>Dashboard</h5></header>
+        <div class="container mb-4">
+            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Statistics</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Symptoms</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Preventions</a>
+                </li>
+              </ul>
+              <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                    <form action="search" method="POST">
+                        {% csrf_token %}
+                        <div class="row mt-2">
+                        <div class="col-4">
+                            <select class="js-example-basic-single col-12" name="key">
+                                {% for i in select %}
+                                <option value='{{ i }}'>{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <button type="submit" class="btn btn-labeled btn-success">
+                            <span class="btn-label"><i><img src="{% static 'img/search.png' %}" height="20px" width="20px"></i></span>Search</button>
+                        </div>
+                        </div>
+                    </form>
+                    <div class="row">
+                    {% for i in data %}
+                    <div class="col-12 col-md-4">
+                    <div class="card shadow p-3 mb-4 bg-white rounded mt-4" style="width: 18rem;">
+                        <div class="card-body">
+                          <h5 class="card-title"><img src="{{ i.0 }}" height="20px" width="20px"> {{ i.1 }}</h5>
+                          <h6 class="card-subtitle mb-2 text-muted">Cases</h6>
+                          <hr>
+                          <p class="card-text text-white">
+                              <ul>
+                                  <li>Total: {{ i.2 }}</li>
+                                  <li>Deaths: {{ i.3 }}</li>
+                                  <li>Recovery: {{ i.4 }}</li>
+                              </ul>
+                          </p>
+                        </div>
+                    </div>  
+                    </div>     
+                    <div class="col-12 col-md-4">
+                    <div class="card shadow p-3 mb-4 bg-white rounded mt-4" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title"><img src="{{ i.0 }}" height="20px" width="20px"> {{ i.1 }}</h5>
+                            <hr>
+                            <canvas id="pie-chart" width="1000" height="1000"></canvas>
+                        </div>
+                    </div>  
+                    </div>
+                    {% endfor %}         
+                        <div class="col-12 col-md-4">
+                            <div class="card shadow p-3 mb-4 bg-white rounded mt-4" style="width: 18rem;">
+                                <div class="card-body">
+                                  <h5 class="card-title"><img src="{% static 'img/worldwide.png' %}" height="20px" width="20px" > Worldwide</h5>
+                                  <h6 class="card-subtitle mb-2 text-muted">Cases of {{ tot_data.0 }} countries</h6>
+                                  <hr>
+                                  <p class="card-text text-white">
+                                      <ul>
+                                          <li>Total: {{ tot_data.1 }}</li>
+                                          <li>Deaths: {{ tot_data.2 }}</li>
+                                          <li>Recovery: {{ tot_data.3 }}</li>
+                                      </ul>
+                                  </p>
+                                </div>
+                            </div>  
+                        </div> 
+                            <div class="col-12">
+                                <canvas id="bar-chart"></canvas>
+                            </div>
+                    </div>
+                <p><strong>Source: </strong><a href="https://en.wikipedia.org/wiki/Template:COVID-19_pandemic_data">Wikipedia</a></p>
+                </div>
+                <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                    <p>COVID-19 affects different people in different ways. Most infected people will develop mild 
+                        to moderate illness and recover without hospitalization. <img src="{% static 'img/symptoms.png' %}" width="30px" height="30px"></p>
+
+                    <p>Most common symptoms:</p>
+                    <ul>
+                        <li>Fever</li>
+                        <li>Dry cough</li>
+                        <li>Tiredness</li>
+                    </ul>
+                    <p>Less common symptoms:</p>
+                    <ul>
+                        <li>Aches and pains</li>
+                        <li>Sore throat</li>
+                        <li>Diarrhoea</li>
+                        <li>Conjunctivitis</li>
+                        <li>Headache</li>
+                        <li>Loss of taste or smell</li>
+                        <li>A rash on skin, or discolouration of fingers or toes</li>
+                    </ul>
+                    <p>Serious symptoms:</p>
+                    <ul>
+                        <li>Difficulty breathing or shortness of breath</li>
+                        <li>Chest pain or pressure</li>
+                        <li>Loss of speech or movement</li>
+                    </ul>
+                    <p>Seek immediate medical attention if you have serious symptoms.  Always call before visiting your doctor or health facility. 
+                    </p>
+                    <p>People with mild symptoms who are otherwise healthy should manage their symptoms at home. 
+                    </p>
+                    <p>On average it takes 5–6 days from when someone is infected with the virus for symptoms to show, however it can take up to 14 days.
+                    </p>
+                    <p><strong>Source: </strong><a href="https://www.who.int/health-topics/coronavirus#tab=tab_3">Who.init</a></p>
+                </div>
+                <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+                    <p>To prevent infection and to slow transmission of COVID-19, do the following: <img src="{% static 'img/man.png' %}" width="25px" height="25px"></p>
+                    <ul>
+                        <li>Wash your hands regularly with soap and water, or clean them with alcohol-based hand rub. <img src="{% static 'img/sanitizer.png' %}" width="25px" height="25px"></li>
+                        <li>Maintain at least 1 metre distance between you and people coughing or sneezing. <img src="{% static 'img/1m.png' %}" width="25px" height="25px"></li>
+                        <li>Avoid touching your face. <img src="{% static 'img/touch.png' %}" width="25px" height="25px"></li>
+                        <li>Cover your mouth and nose when coughing or sneezing. <img src="{% static 'img/cover.png' %}" width="25px" height="25px"></li>
+                        <li>Stay home if you feel unwell. <img src="{% static 'img/house.png' %}" width="25px" height="25px"></li>
+                        <li>Refrain from smoking and other activities that weaken the lungs. <img src="{% static 'img/nosmoke.png' %}" width="25px" height="25px"></li>
+                        <li>Practice physical distancing by avoiding unnecessary travel and staying away from large groups of people. <img src="{% static 'img/phydis.png' %}" width="25px" height="25px"></li>
+                    </ul>
+                    <br>
+                    <p><strong>Source: </strong><a href="https://www.who.int/health-topics/coronavirus#tab=tab_2">Who.init</a></p>
+                </div>
+              </div>
+        </div>
+    <footer>
+        <h6 class="text-center">Made with <img src="{% static 'img/heart.png' %}" width="30px" height="30px"> by <a href="https://www.linkedin.com/in/aviralkapoor411/">Aviral Kapoor</a></h6>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+        $('.js-example-basic-single').select2();
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script>
+        let str="";
+        let country=[];
+        let r=0;
+        let s=0;
+        let active_cases=[];
+        let pc=[];
+      for (i of "{{ graph_label }}")
+      {
+          if(i!='[' && i!='&' && i!='#' && i!='x' && i!='2' && i!='7' && i!=';' && i!=']' && i!=',')
+          {
+
+              str+=i;
+          }
+          if(i==',' || i==']')
+          {
+              country.push(str)
+              str="";
+          }
+      }
+      for (i of "{{ active_cases }}")
+      {
+          if(i!='[' && i!=']' && i!=',')
+          {
+
+              r=(r*10)+Number(i)
+          }
+          if(i==',' || i==']')
+          {
+              active_cases.push(r)
+              r=0;
+          }
+      }
+      for (i of "{{ p_c }}")
+      {
+          if(i!='[' && i!=']' && i!=',')
+          {
+
+            s=(s*10)+Number(i);
+          }
+          if(i==',' || i==']')
+          {
+              pc.push(s)
+              s=0
+          }
+      }
+      var conf = {
+        type: 'bar',
+        data: {
+          datasets: [{
+            data: active_cases,
+            backgroundColor: [
+              '#FFDDE2FF', '#FAA094FF', '#9ED9CCFF', '#008C76FF', '#FFDDE2FF','#FFDDE2FF', '#FAA094FF', '#9ED9CCFF', '#008C76FF', '#FFDDE2FF'
+            ],
+            label: 'Active Cases of Top 10 affected Countries'
+          }],
+          labels:country
+        },
+        options: {
+          responsive: true
+        }
+      };
+
+      var config = {
+          type: 'pie',
+          data: {
+            datasets: [{
+              data: pc,
+              backgroundColor: [
+                '#2BAE66FF','#F93822FF','#FFDDE2FF'
+              ],
+              label: '#'
+            }],
+            labels: ['Recovered','Deaths','Cases']
+          },
+          options: {
+            responsive: true
+          }
+        };
+
+      window.onload = function() {
+        var ctx = document.getElementById('bar-chart').getContext('2d');
+        window.myBar = new Chart(ctx, conf);
+        var cty = document.getElementById('pie-chart').getContext('2d');
+        window.myPie = new Chart(cty, config);
+      };
+    </script>
+    {% endblock %}
+    </body>
+</html>
