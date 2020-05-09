@@ -3,16 +3,23 @@ import requests
 from bs4 import BeautifulSoup
 
 
-URL = 'https://en.wikipedia.org/wiki/Template:COVID-19_pandemic_data'
-page = requests.get(URL)
-soup = BeautifulSoup(page.content, 'html.parser')
+URL_1 = 'https://en.wikipedia.org/wiki/Template:COVID-19_pandemic_data'
+URL_2 = 'https://www.mohfw.gov.in/'
+page_1 = requests.get(URL_1)
+page_2=requests.get(URL_2)
+
+soup = BeautifulSoup(page_1.content, 'html.parser')
+row=soup.find_all('tr')
+bowl=BeautifulSoup(page_2.content,'html.parser')
+states=bowl.find_all('tr')
 data=[]
 data_precise=[]
 search_res=[]
 select=[]
 tot_data=[]
 graph_d_label=[]
-row=soup.find_all('tr')
+
+
 for i in range(1,231):
     if i!=1:
         ths=row[i].find_all('th')
@@ -31,6 +38,18 @@ for i in range(1,231):
         ths=row[i].find_all('th')
         for th in ths:
             tot_data.append(th.text.strip())
+
+def states_i(key):
+    states_India=[]
+    states_dummy=[]
+    if key == 'India' or key == 'india':
+        for s in range(1,33):
+            std=states[s].find_all('td')
+            for td in std:
+                states_dummy.append(td.text.strip())
+            states_India.append(states_dummy)
+            states_dummy=[]
+    return states_India
 
 def number(data):
     encoded_data=[]
@@ -51,6 +70,22 @@ def active(data):
         active_cases.append(r)
     return active_cases
 
+
+def line_chart():
+    dummy_states=[]
+    dummy_list=[]
+    data=states_i('India')
+    for i in data:
+        dummy_states.append(i[1])
+        dummy_list.append(i[2])
+        dummy_list.append(i[4])
+        dummy_list.append(i[3])
+    dummy_list=number(dummy_list)
+    dummy_list=active(dummy_list)
+    dum={'0':dummy_states,'1':dummy_list}
+    return dum
+
+
 def pie_chart(data):
     p_ch=[]
     for j in data:
@@ -66,9 +101,16 @@ def index(req):
     for ele in data:
         if ele[1]=='India':
             search_res.append(ele)
+            states_data=states_i('India')
+            data_1=line_chart()
+            for k,v in data_1.items():
+                if k == '0':
+                    d_s=v
+                else:
+                    d_a=v
+                    
     p_c=pie_chart(search_res)
-    print(p_c)
-    return render(req,'Covid_Track/index.html',{'data':search_res,'p_c':p_c,'select':select,'tot_data':tot_data,'graph_label':select[:10],'active_cases':active_cases[:10]})
+    return render(req,'Covid_Track/index.html',{'data':search_res,'p_c':p_c,'select':select,'tot_data':tot_data,'graph_label':select[:10],'active_cases':active_cases[:10],'states':states_data,'d_s':d_s,'d_a':d_a})
 
 def search(req):
     key=req.POST["key"]
@@ -76,9 +118,17 @@ def search(req):
     for ele in data:
         if ele[1].lower()==key.lower():
             search_res.append(ele)
+            data_1=line_chart()
+            for k,v in data_1.items():
+                if k == '0':
+                    d_s=v
+                else:
+                    d_a=v
+
             break
     else:
         search_res.append(['No such Country found','No data','No data','No data'])
+    states_data=states_i(key)
     p_c=pie_chart(search_res)
-    return render(req,'Covid_Track/index.html',{'data':search_res,'p_c':p_c,'select':select,'tot_data':tot_data,'graph_label':select[:10],'active_cases':active_cases[:10]})
+    return render(req,'Covid_Track/index.html',{'data':search_res,'p_c':p_c,'select':select,'tot_data':tot_data,'graph_label':select[:10],'active_cases':active_cases[:10],'states':states_data,'d_s':d_s,'d_a':d_a})
     

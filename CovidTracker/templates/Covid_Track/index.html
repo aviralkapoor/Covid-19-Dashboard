@@ -7,6 +7,7 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="{% static 'css/mystyle.css' %}">
         <link rel="shortcut icon" href="{% static 'img/logo1.png' %}">
         <title>Covid 19 Dashboard</title>
@@ -88,11 +89,60 @@
                                 </div>
                             </div>  
                         </div> 
-                            <div class="col-12">
-                                <canvas id="bar-chart"></canvas>
-                            </div>
                     </div>
-                <p><strong>Source: </strong><a href="https://en.wikipedia.org/wiki/Template:COVID-19_pandemic_data">Wikipedia</a></p>
+                            {% if states %}
+<div class="row">  
+<div class="col-12">      
+<div class="card shadow p-3 mb-4">
+
+  <div class="card-body text-center">
+    <h5 class="card-title">India</h5>
+    <h6 class="card-subtitle mb-2 text-muted">Statewise Cases</h6>
+  </div>
+
+    <div class="table-wrapper" style="height:500px; overflow-y:scroll;">
+      <table class="table mb-0 table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th>#</th>
+            <th>State</th>
+            <th>Total Cases</th>
+            <th>Recovery</th>
+            <th>Death</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in states %}
+          <tr>
+            <td>{{ s.0 }}</td>
+            <td>{{ s.1 }}</td>
+            <td>{{ s.2 }}</td>
+            <td>{{ s.3 }}</td>
+            <td>{{ s.4 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>
+</div>    
+                {% endif %}
+                {% if states %}
+                <div class="row">
+                  <div class="col-12">
+                      <canvas id="line-chart"></canvas>
+                  </div>
+                </div>
+                {% endif %}
+                <div class="row">
+                  <div class="col-12">
+                    <canvas id="bar-chart"></canvas>
+                </div>
+                </div>
+                <p><strong>Source: </strong><a href="https://en.wikipedia.org/wiki/Template:COVID-19_pandemic_data">Wikipedia</a> and <a href="https://www.mohfw.gov.in/">MoHFW</a></p>
                 </div>
                 <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
                     <p>COVID-19 affects different people in different ways. Most infected people will develop mild 
@@ -159,11 +209,14 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
     <script>
         let str="";
+        let strg="";
         let country=[];
         let r=0;
         let s=0;
         let active_cases=[];
+        let active_cases_s=[];
         let pc=[];
+        let states=[];
       for (i of "{{ graph_label }}")
       {
           if(i!='[' && i!='&' && i!='#' && i!='x' && i!='2' && i!='7' && i!=';' && i!=']' && i!=',')
@@ -203,6 +256,32 @@
               s=0
           }
       }
+      for (i of "{{ d_s }}")
+      {
+          if(i!='[' && i!='&' && i!='#' && i!='x' && i!='2' && i!='7' && i!=';' && i!=']' && i!=',')
+          {
+
+              strg+=i;
+          }
+          if(i==',' || i==']')
+          {
+              states.push(strg)
+              strg="";
+          }
+      }
+      for (i of "{{ d_a }}")
+      {
+          if(i!='[' && i!=']' && i!=',')
+          {
+
+              r=(r*10)+Number(i)
+          }
+          if(i==',' || i==']')
+          {
+              active_cases_s.push(r)
+              r=0;
+          }
+      }
       var conf = {
         type: 'bar',
         data: {
@@ -237,11 +316,32 @@
           }
         };
 
+        var config_l = {
+          type: 'line',
+          data: {
+            labels:states,
+            datasets: [{
+              data: active_cases_s,
+              fill:false,
+              borderColor: [
+              'rgb(75,192,192)'
+              ],
+              lineTension:0.1,
+              label: 'Statewise active cases of India'
+            }],
+          },
+          options: {
+            responsive: true
+          }
+        };
+
       window.onload = function() {
         var ctx = document.getElementById('bar-chart').getContext('2d');
         window.myBar = new Chart(ctx, conf);
         var cty = document.getElementById('pie-chart').getContext('2d');
         window.myPie = new Chart(cty, config);
+        var ctz = document.getElementById('line-chart').getContext('2d');
+        window.myline = new Chart(ctz, config_l);
       };
     </script>
     {% endblock %}
