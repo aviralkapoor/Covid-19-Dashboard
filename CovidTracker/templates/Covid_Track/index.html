@@ -97,7 +97,7 @@
 
   <div class="card-body text-center">
     <h5 class="card-title">India</h5>
-    <h6 class="card-subtitle mb-2 text-muted">Statewise Cases</h6>
+    <h6 class="card-subtitle mb-2 text-muted">Cases by State/Union Territory</h6>
   </div>
 
     <div class="table-wrapper" style="height:500px; overflow-y:scroll;">
@@ -105,10 +105,11 @@
         <thead class="thead-light">
           <tr>
             <th>#</th>
-            <th>State</th>
+            <th>State/Union Territory</th>
             <th>Total Cases</th>
-            <th>Recovery</th>
-            <th>Death</th>
+            <th>Deaths</th>
+            <th>Recoveries</th>
+            <th>Active Cases</th>
           </tr>
         </thead>
         <tbody>
@@ -119,6 +120,7 @@
             <td>{{ s.2 }}</td>
             <td>{{ s.3 }}</td>
             <td>{{ s.4 }}</td>
+            <td>{{ s.5 }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -129,20 +131,18 @@
 
 </div>
 </div>    
-                {% endif %}
-                {% if states %}
                 <div class="row">
-                  <div class="col-12">
-                      <canvas id="line-chart"></canvas>
+                  <div class="col-12" style="width:100px; overflow-x: scroll;">
+                      <canvas id="line-chart" height="500" width="1500"></canvas>
                   </div>
                 </div>
                 {% endif %}
                 <div class="row">
-                  <div class="col-12">
-                    <canvas id="bar-chart"></canvas>
+                  <div class="col-12" style="width:100px; overflow-x: scroll;">
+                    <canvas id="bar-chart" height="500" width="1500"></canvas>
                 </div>
                 </div>
-                <p><strong>Source: </strong><a href="https://en.wikipedia.org/wiki/Template:COVID-19_pandemic_data">Wikipedia</a> and <a href="https://www.mohfw.gov.in/">MoHFW</a></p>
+                <p><strong>Source: </strong><a href="https://en.wikipedia.org/wiki/Template:COVID-19_pandemic_data">Wikipedia</a></p>
                 </div>
                 <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
                     <p>COVID-19 affects different people in different ways. Most infected people will develop mild 
@@ -288,14 +288,14 @@
           datasets: [{
             data: active_cases,
             backgroundColor: [
-              '#FFDDE2FF', '#FAA094FF', '#9ED9CCFF', '#008C76FF', '#FFDDE2FF','#FFDDE2FF', '#FAA094FF', '#9ED9CCFF', '#008C76FF', '#FFDDE2FF'
+              '#FFDDE2FF', '#FAA094FF', '#9ED9CCFF', '#008C76FF', '#FFDDE2FF','#FFDDE2FF', '#FAA094FF', '#9ED9CCFF', '#008C76FF', '#FFDDE2FF','#FFDDE2FF', '#FAA094FF', '#9ED9CCFF', '#008C76FF', '#FFDDE2FF','#FFDDE2FF', '#FAA094FF', '#9ED9CCFF', '#008C76FF', '#FFDDE2FF'
             ],
             label: 'Active Cases of Top 10 affected Countries'
           }],
           labels:country
         },
         options: {
-          responsive: true
+          responsive: false
         }
       };
 
@@ -322,17 +322,31 @@
             labels:states,
             datasets: [{
               data: active_cases_s,
-              fill:false,
+              fill:true,
               borderColor: [
               'rgb(75,192,192)'
               ],
               lineTension:0.1,
-              label: 'Statewise active cases of India'
+              label: 'Active Cases by State/Union Territory of India'
             }],
           },
           options: {
-            responsive: true
-          }
+            responsive: false
+          },
+          scales: {
+                xAxes: [{
+                    ticks: {
+                        fontSize: 12,
+                        display: false
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        fontSize: 12,
+                        beginAtZero: true
+                    }
+                }]
+            },
         };
 
       window.onload = function() {
