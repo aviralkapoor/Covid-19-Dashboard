@@ -13,7 +13,7 @@ def execute(row):
     select=[]
     tot_data=[]
     graph_d_label=[]
-    for i in range(1,231):
+    for i in range(1,229):
         if i!=1:
             ths=row[i].find_all('th')
             temp=ths[0].find('img')
@@ -104,11 +104,10 @@ def pie_chart(data):
             p_ch.append(j[i])
     return number(p_ch)
 
-
+states,data,tot_data,select,graph_d_label=fetch()
 
 def index(req):
     search_res=[]
-    states,data,tot_data,select,graph_d_label=fetch()
     for ele in data:
         if ele[1]=='India':
             search_res.append(ele)
@@ -127,7 +126,6 @@ def index(req):
 def search(req):
     key=req.POST["key"]
     search_res=[]
-    states,data,tot_data,select,graph_d_label=fetch()
     for ele in data:
         if ele[1].lower()==key.lower():
             search_res.append(ele)
