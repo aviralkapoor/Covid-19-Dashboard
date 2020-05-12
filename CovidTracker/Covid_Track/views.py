@@ -1,6 +1,7 @@
 from django.shortcuts import render
 import requests
 from bs4 import BeautifulSoup
+import time
 
 
 URL_1 = 'https://en.wikipedia.org/wiki/Template:COVID-19_pandemic_data'
@@ -33,6 +34,10 @@ def execute(row):
                 tot_data.append(th.text.strip())
     return data,tot_data,select,graph_d_label
 
+def up_time():
+    sec=time.time()
+    local_time=time.ctime(sec)
+    return local_time
 
 def fetch():
     page_1 = requests.get(URL_1)
@@ -44,7 +49,8 @@ def fetch():
     states=states.find('tbody')
     states=states.find_all('tr')[2:]
     data,tot_data,select,graph_d_label=execute(row)
-    return states,data,tot_data,select,graph_d_label
+    time=up_time()
+    return states,data,tot_data,select,graph_d_label,time
     
 
 def number(data):
@@ -104,7 +110,7 @@ def pie_chart(data):
             p_ch.append(j[i])
     return number(p_ch)
 
-states,data,tot_data,select,graph_d_label=fetch()
+states,data,tot_data,select,graph_d_label,time=fetch()
 
 def index(req):
     search_res=[]
@@ -121,7 +127,7 @@ def index(req):
 
     p_c=pie_chart(search_res)
     active_cases=active(number(graph_d_label))
-    return render(req,'Covid_Track/index.html',{'data':search_res,'p_c':p_c,'select':select,'tot_data':tot_data,'graph_label':select[:20],'active_cases':active_cases[:20],'states':states_data,'d_s':d_s,'d_a':d_a})
+    return render(req,'Covid_Track/index.html',{'data':search_res,'p_c':p_c,'select':select,'tot_data':tot_data,'graph_label':select[:20],'active_cases':active_cases[:20],'states':states_data,'d_s':d_s,'d_a':d_a,'time':time})
 
 def search(req):
     key=req.POST["key"]
@@ -142,5 +148,5 @@ def search(req):
     states_data=states_i(states,key)
     active_cases=active(number(graph_d_label))
     p_c=pie_chart(search_res)
-    return render(req,'Covid_Track/index.html',{'data':search_res,'p_c':p_c,'select':select,'tot_data':tot_data,'graph_label':select[:20],'active_cases':active_cases[:20],'states':states_data,'d_s':d_s,'d_a':d_a})
+    return render(req,'Covid_Track/index.html',{'data':search_res,'p_c':p_c,'select':select,'tot_data':tot_data,'graph_label':select[:20],'active_cases':active_cases[:20],'states':states_data,'d_s':d_s,'d_a':d_a,'time':time})
     
