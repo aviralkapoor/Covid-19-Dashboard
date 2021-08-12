@@ -45,22 +45,30 @@
                         </div>
                         </div>
                     </form>
-                    <div class="row">
                     {% for i in data %}
+                    <div class="row">
+  
                     <div class="col-12 col-md-4">
                     <div class="card shadow p-3 mb-4 bg-white rounded mt-4" style="width: 18rem;">
                         <div class="card-body">
+           
                           <h5 class="card-title"><img src="{{ i.0 }}" height="20px" width="20px"> {{ i.1 }}</h5>
                           <h6 class="card-subtitle mb-2 text-muted">Cases</h6>
                           <hr>
                           <p class="card-text text-white">
                               <ul>
-                                  <li>Total: {{ i.2 }}</li>
+                                  <li>Total: {{ i.2 }} 
+                                    {% if inc %}
+                                    <div class="text-muted"><img src="{% static 'img/inc.png' %}" height="20px" width="20px" > {{ inc }} *</div></li>
+                                    {% endif %}
                                   <li>Deaths: {{ i.3 }}</li>
-                                  <li>Recovery: {{ i.4 }}</li>
+                                  <li>Recovered: {{ i.4 }}</li>
                               </ul>
                           </p>
-                          <p><div class="text-muted">Last Updated at: </div>{{ time }}</p>
+                          <hr>
+                          <p><div class="text-muted">Last Updated at: </div>{{ time }} GMT</p>
+                          <!--<small>* New cases from previous day</small> -->
+                      
                         </div>
                     </div>  
                     </div>     
@@ -73,24 +81,55 @@
                         </div>
                     </div>  
                     </div>
-                    {% endfor %}         
-                        <div class="col-12 col-md-4">
-                            <div class="card shadow p-3 mb-4 bg-white rounded mt-4" style="width: 18rem;">
-                                <div class="card-body">
-                                  <h5 class="card-title"><img src="{% static 'img/worldwide.png' %}" height="20px" width="20px" > Worldwide</h5>
-                                  <h6 class="card-subtitle mb-2 text-muted">Cases of {{ tot_data.0 }} countries</h6>
-                                  <hr>
-                                  <p class="card-text text-white">
-                                      <ul>
-                                          <li>Total: {{ tot_data.1 }}</li>
-                                          <li>Deaths: {{ tot_data.2 }}</li>
-                                          <li>Recovery: {{ tot_data.3 }}</li>
-                                      </ul>
-                                  </p>
-                                </div>
-                            </div>  
-                        </div> 
+                    <div class="col-12 col-md-4">
+                      <div class="card shadow p-3 mb-4 bg-white rounded mt-4" style="width: 18rem;">
+                          <div class="card-body">
+                            <h5 class="card-title"><img src="{{ i.0 }}" height="20px" width="20px"> {{ i.1 }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Vaccination</h6>
+                            <hr>
+                            <p class="card-text text-white">
+                                <ul>
+                                    <li>Total Vaccinations: {{ i.5 }}</li>
+                                    <li>Percentage: {{ i.6 }} *</li>
+            
+                                </ul>
+                                <small>* received atleast one dose</small>
+                            </p>
+                          </div>
+                      </div>  
+                  </div>        
+                    
                     </div>
+                    {% endfor %}
+                    <div class="row">
+                      <div class="col-12 col-md-8">
+                        <div class="card shadow p-3 mb-4 bg-white rounded mt-4" style="width: 18rem;">
+                            <div class="card-body">
+                              <h5 class="card-title"><img src="{% static 'img/worldwide.png' %}" height="20px" width="20px"> Worldwide</h5>
+                              <h6 class="card-subtitle mb-2 text-muted">Cases of all countries</h6>
+                              <hr>
+                              <p class="card-text text-white">
+                                  <ul>
+                                      <li>Total: {{ tot_data.1 }}</li>
+                                      <li>Deaths: {{ tot_data.2 }}</li>
+                                      <li>Recovered: {{ tot_data.3 }}</li>
+                                  </ul>
+                              </p>
+                              <h6 class="card-subtitle mb-2 text-muted">Vaccination of all countries</h6>
+                              <hr>
+                              <p class="card-text text-white">
+                                  <ul>
+                                      <li>Total Vaccinations: {{ tot_vacc.1 }}</li>
+                                      <li>Percentage: {{ tot_vacc.2 }} *</li>
+                                      
+                                  </ul>
+                                  <small>* received atleast one dose</small>
+                              </p>
+                            </div>
+                        </div>  
+                    </div>
+                    </div>
+            
                             {% if states %}
 <div class="row">  
 <div class="col-12">      
@@ -105,7 +144,6 @@
       <table class="table mb-0 table-hover">
         <thead class="thead-light">
           <tr>
-            <th>#</th>
             <th>State/Union Territory</th>
             <th>Total Cases</th>
             <th>Deaths</th>
@@ -121,7 +159,6 @@
             <td>{{ s.2 }}</td>
             <td>{{ s.3 }}</td>
             <td>{{ s.4 }}</td>
-            <td>{{ s.5 }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -355,8 +392,10 @@
         window.myBar = new Chart(ctx, conf);
         var cty = document.getElementById('pie-chart').getContext('2d');
         window.myPie = new Chart(cty, config);
+        if(document.getElementById('line-chart')!==null){
         var ctz = document.getElementById('line-chart').getContext('2d');
         window.myline = new Chart(ctz, config_l);
+        }
       };
     </script>
     {% endblock %}
